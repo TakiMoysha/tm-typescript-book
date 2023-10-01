@@ -1,4 +1,4 @@
-import { sleep, isPromiseLike } from "../utils.ts";
+import { isPromiseLike, sleep } from "../utils.ts";
 
 type initializer<T> = (resolve: Resolve<T>, reject: Reject) => void;
 
@@ -9,8 +9,12 @@ type Reject = (reason?: any) => void;
 type Status = "fulfilled" | "rejected" | "pending";
 
 export class TMPromise<T> {
-  thenCb: [AnyFunction, Resolve<T>][] = [];
-  catchCb: [AnyFunction, Reject][] = [];
+  callbacks: [
+    AnyFunction | undefined,
+    AnyFunction | undefined,
+    Resolve<T>,
+    Reject,
+  ][] = [];
   status: Status = "pending";
   value: T | null = null;
   error?: any;
@@ -19,15 +23,15 @@ export class TMPromise<T> {
     initializer(this.resolve, this.reject);
   }
 
-  then = (thenCb: (value: T) => void) => {
+  then = (thenCb?: (value: T) => void, catchCb?: (reason?: any) => void) => {
     return new TMPromise((resolve, reject) => {
-      this.thenCb.push([thenCb, resolve]);
+      this.callbacks.push([thenCb, catchCb, resolve, reject]);
     });
   };
 
-  catch = (catchCb: (reason?: any) => void) => {
+  catch = (catchCb?: (reason?: any) => void) => {
     return new TMPromise((resolve, reject) => {
-      this.catchCb.push([catchCb, reject]);
+      this.callbacks.push([undefined, catchCb, resolve, reject]);
     });
   };
 
@@ -51,18 +55,23 @@ export class TMPromise<T> {
   private process = () => {
     if (this.status === "pending") {
       return;
-    } else if (this.status === "fulfilled") {
-      const thenCbs = this.thenCb;
-      this.thenCb = [];
-      thenCbs.forEach(([thenCb, resolve]) => {
-        const value = thenCb();
-      });
-
-      // this.resolve(this.value);
-    } else if (this.status === "rejected") {
-      // this.reject(this.reason);
-    } else {
-      throw new Error("Promise is not prevented status invariant.");
     }
+
+    const cbs = this.callbacks;
+    this.callbacks = [];
+
+    cbs.forEach(([thenCb, catchCb, resolve, reject]) => {
+      try {
+        if (this.status === "fulfilled") {
+          const value = thenCb ? thenCb(this.value) : this.value;
+          resolve(value);
+        } else {
+          const reason = catchCb ? catchCb(this.error) : this.error;
+          reject(reason);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
   };
 }

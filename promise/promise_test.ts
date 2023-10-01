@@ -1,6 +1,6 @@
 import { sleep } from "../utils.ts";
 
-Deno.test("Defalt Prmose behavior", async () => {
+Deno.test("Defalt Prmose behavior - sleep", async () => {
   await new Promise<number>((resolve, _reject) => {
     setTimeout(() => {
       resolve(5);
@@ -18,7 +18,7 @@ Deno.test("Defalt Prmose behavior", async () => {
     });
 });
 
-Deno.test("Default Promise behavior", async () => {
+Deno.test("Default Promise behavior - vars", async () => {
   const promise = new Promise<number>((resolve, _reject) => {
     setTimeout(() => {
       resolve(2);
@@ -28,5 +28,28 @@ Deno.test("Default Promise behavior", async () => {
     console.log("res-2:", res);
   });
 
-  await promise2
+  await promise2;
+});
+
+Deno.test("Default Promise behavior - args", async () => {
+  await new Promise<number>((resolve, _reject) => {
+    setTimeout(() => {
+      resolve(3_000);
+    }, 1000);
+  })
+    .then(
+      (res) => {
+        console.log("res:", res);
+      },
+      (err) => {
+        console.log("err:", err);
+      },
+    )
+    .catch(console.error);
+});
+
+Deno.test("Default Promise behavior - async", async () => {
+  // not implemented
+  Promise.resolve(5).then(console.log); // first
+  console.log("asfd"); // second
 });
