@@ -9,7 +9,7 @@ Deno.test("TM Promise behavior - sleep", async () => {
   })
     .then((res) => {
       console.log("res:", res);
-    return sleep(2_000)
+      return sleep(2_000);
     })
     .catch((err) => {
       console.log("err:", err);
@@ -18,9 +18,29 @@ Deno.test("TM Promise behavior - sleep", async () => {
   await prom;
 });
 
-Deno.test("TM Promise behavior - async", async () => {
-  const promise = new TMPromise((resolve) => {
+Deno.test("TM Promise behavior - async", () => {
+  new TMPromise((resolve) => {
     resolve(5);
-  }).then(console.log) // first
+  }).then(console.log); // first
   console.log("asfd"); // second
-})
+});
+
+Deno.test("TM Promise behavior - long chain", () => {
+  new TMPromise<number>((resolve) => {
+    resolve(5);
+  })
+    .then((val) => {
+      console.log(val);
+      throw new Error("error");
+    })
+    .then(() => {
+      console.log("not reached");
+    })
+    .catch((error) => console.error(error))
+    .then(() => {
+      return new TMPromise((resolve) => {
+        resolve(5);
+      });
+    })
+    .then(console.log);
+});

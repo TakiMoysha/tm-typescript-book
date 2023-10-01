@@ -23,6 +23,43 @@ export class TMPromise<T> {
     initializer(this.resolve, this.reject);
   }
 
+  static all<U>(promises: TMPromise<U>[]) {
+    const res = Array<U>(promises.length);
+    let count = 0;
+
+    return new TMPromise((resolve, reject) => {
+      promises.forEach((p, indx) => {
+        p.then((value) => {
+          res[indx] = value;
+          count++;
+          if (count === promises.length) {
+            resolve(res);
+          }
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    });
+  }
+
+  static resolve<U>(value: U) {
+    return new TMPromise<U>((resolve) => resolve(value));
+  }
+
+  static reject(reason?: any) {
+    return new TMPromise((reject) => reject(reason));
+  }
+
+  static race<U>(promises: TMPromise<U>[]) {
+    return new TMPromise((resolve, reject) => {
+      promises.forEach((p) => TMPromise.resolve(p).then(resolve).catch(reject));
+    });
+  }
+
+  static allSettled<U>(promises: TMPromise<U>[]) {
+    return this.all(promises.map((p) => p.catch((err) => err)));
+  }
+
   then = (thenCb?: (value: T) => void, catchCb?: (reason?: any) => void) => {
     const promise = new TMPromise((resolve, reject) => {
       this.callbacks.push([thenCb, catchCb, resolve, reject]);
@@ -70,8 +107,11 @@ export class TMPromise<T> {
           const value = thenCb ? thenCb(this.value) : this.value;
           resolve(value);
         } else {
-          const reason = catchCb ? catchCb(this.error) : this.error;
-          reject(reason);
+          if (catchCb) {
+            resolve(catchCb(this.error));
+          } else {
+            reject(this.error);
+          }
         }
       } catch (error) {
         reject(error);
