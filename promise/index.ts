@@ -24,15 +24,19 @@ export class TMPromise<T> {
   }
 
   then = (thenCb?: (value: T) => void, catchCb?: (reason?: any) => void) => {
-    return new TMPromise((resolve, reject) => {
+    const promise = new TMPromise((resolve, reject) => {
       this.callbacks.push([thenCb, catchCb, resolve, reject]);
     });
+    this.process();
+    return promise;
   };
 
   catch = (catchCb?: (reason?: any) => void) => {
-    return new TMPromise((resolve, reject) => {
+    const promise = new TMPromise((resolve, reject) => {
       this.callbacks.push([undefined, catchCb, resolve, reject]);
     });
+    this.process();
+    return promise;
   };
 
   private resolve = (value: T | PromiseLike<T>) => {

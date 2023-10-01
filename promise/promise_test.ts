@@ -49,7 +49,6 @@ Deno.test("Default Promise behavior - args", async () => {
 });
 
 Deno.test("Default Promise behavior - async", async () => {
-  // not implemented
   Promise.resolve(5).then(console.log); // first
   console.log("asfd"); // second
 });

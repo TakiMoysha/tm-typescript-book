@@ -1,7 +1,7 @@
 import { sleep } from "../utils.ts";
 import { TMPromise } from "./index.ts";
 
-Deno.test("TM Promise behavior", async () => {
+Deno.test("TM Promise behavior - sleep", async () => {
   const prom = new TMPromise<number>((resolve, _reject) => {
     setTimeout(() => {
       resolve(2);
@@ -9,6 +9,7 @@ Deno.test("TM Promise behavior", async () => {
   })
     .then((res) => {
       console.log("res:", res);
+    return sleep(2_000)
     })
     .catch((err) => {
       console.log("err:", err);
@@ -16,3 +17,10 @@ Deno.test("TM Promise behavior", async () => {
 
   await prom;
 });
+
+Deno.test("TM Promise behavior - async", async () => {
+  const promise = new TMPromise((resolve) => {
+    resolve(5);
+  }).then(console.log) // first
+  console.log("asfd"); // second
+})
