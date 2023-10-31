@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
+import { loadData } from "@/data";
 const props = defineProps(["title"]);
 
+// data
+console.log("data", loadData({type: "simple"}));
+const data = loadData();
 // virtual scrolling
 const scrollTop = ref(0);
 const setScrollTop = ref(0);
 const scrollElementRef = ref<HTMLDivElement>(null);
+
+const computedScrollTop = computed(() => {
+  return scrollTop.value;
+});
 
 onMounted(() => {
   window.scrollTo(0, 0);
@@ -15,31 +23,20 @@ onMounted(() => {
 <template>
   <div>
     <h2>{{ props.title }}</h2>
-    <div class="table-responsive">
+    <div class="table-responsive-lg" :style="{ height: '73vh', overflow: 'auto', border: '1px inset black' }">
       <table class="table table-striped table-sm">
         <thead>
           <tr>
             <th scope="col">#</th>
             <th scope="col">Header</th>
             <th scope="col">Header</th>
-            <th scope="col">Header</th>
-            <th scope="col">Header</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>1,001</td>
-            <td>random</td>
-            <td>data</td>
-            <td>placeholder</td>
-            <td>text</td>
-          </tr>
-          <tr>
-            <td>1,002</td>
-            <td>placeholder</td>
-            <td>irrelevant</td>
-            <td>visual</td>
-            <td>layout</td>
+        <tbody class="">
+          <tr v-for="(item, index) in data" :key="index">
+            <td>{{ index + 1 }}</td>
+            <td>{{ item.id }}</td>
+            <td>{{ item.text }}</td>
           </tr>
         </tbody>
       </table>
