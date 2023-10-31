@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import VScroll from "@/components/VirtualScroll.vue";
+import { state } from "@/state";
 </script>
 
 <template>
@@ -44,6 +45,9 @@ import VScroll from "@/components/VirtualScroll.vue";
               <li class="nav-item">
                 <a class="nav-link" href="#">Mock Data</a>
               </li>
+            </ul>
+            <ul>
+              <span>{{ state.debugValue }}</span>
             </ul>
           </div>
         </nav>

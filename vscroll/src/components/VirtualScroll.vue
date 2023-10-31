@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
-import { loadData } from "@/data";
 const props = defineProps(["title"]);
 
+//state
+import { state } from "@/state";
+
 // data
-console.log("data", loadData({type: "simple"}));
+import { loadData } from "@/data";
 const data = loadData();
 // virtual scrolling
 const scrollTop = ref(0);
@@ -18,6 +20,13 @@ const computedScrollTop = computed(() => {
 onMounted(() => {
   window.scrollTo(0, 0);
 });
+(() => {
+  console.log(scrollTop)
+  state.debugValue = {
+    scrollTop: computedScrollTop.value,
+    setScrollTop: setScrollTop.value,
+  };
+})
 </script>
 
 <template>
