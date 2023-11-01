@@ -9,13 +9,13 @@ export const state = reactive({
   }
 })
 
-export const useState = (value: any) => {
-  const _value = ref(value);
-  const setter = (newValue: any) => {
-    _value = newValue
-  };
-  return [
-    value,
-    setter
-  ]
-}
+// export const useState = (value: any) => {
+//   const _value = ref(value);
+//   const setter = (newValue: any) => {
+//     _value.value = newValue
+//   };
+//   return [
+//     value,
+//     setter
+//   ]
+// }
