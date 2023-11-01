@@ -3,7 +3,7 @@ import { state } from "@/state";
 import { onMounted, ref, computed, watch, reactive } from "vue";
 const props = defineProps(["title", "reverse"]);
 
-// reverse
+// reverse // todo: wip
 watch(
   () => props.reverse,
   () => {
@@ -25,7 +25,7 @@ const scrollTop = ref(0);
 const scrollElementRef = ref<HTMLDivElement>(null);
 const totalListHeight = computed(() => itemHeight * data.length);
 
-const entriesToRender = computed(() => {
+const proxyEntriesToRender = computed(() => {
   const rangeStart = scrollTop.value;
   const rangeEnd = rangeStart + containerHeight;
   const _startIndex = Math.floor(rangeStart / itemHeight);
@@ -35,7 +35,7 @@ const entriesToRender = computed(() => {
   let endIndex = _endIndex > data.length - 1 ? data.length - 1 : _endIndex;
   // let endIndex = Math.min(endIndex, data.length - 1);
   const virtualEntries = [];
-  for (let index = startIndex; index < endIndex; index++) {
+  for (let index = startIndex; index <= endIndex; index++) {
     virtualEntries.push({
       index,
       offsetTop: index * itemHeight,
@@ -55,21 +55,20 @@ const handlerScroll = () => {
     <span>{{ totalListHeight }}</span>
     <div class="table-responsive-lg" ref="scrollElementRef" @scroll="handlerScroll"
       :style="{ height: '73vh', overflow: 'auto', border: '1px inset black' }">
-      <div :style="{ height: totalListHeight + 'px', }">
-
-        <table class="table table-striped table-sm" style="position: sticky; top: 0px;">
+      <div :style="{ height: totalListHeight + 'px' }">
+        <table class="table table-striped table-sm" style="position: sticky; top: 0px">
           <thead>
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">Header</th>
-              <th scope="col">Header</th>
+              <th scope="col">Id</th>
+              <th scope="col">Body</th>
+              <th scope="col">Real id</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in entriesToRender" :key="item.index">
-              <td>{{ item.index }}</td>
-              <td>{{ item }}</td>
-              <td></td>
+            <tr v-for="prx of proxyEntriesToRender" :key="prx.index">
+              <td>{{ data[prx.index].id }}</td>
+              <td>{{ data[prx.index].text }}</td>
+              <td>{{ prx }}</td>
             </tr>
           </tbody>
         </table>
