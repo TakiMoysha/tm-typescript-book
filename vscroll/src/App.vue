@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import VScroll from "@/components/VirtualScroll.vue";
 import { state } from "@/state";
+import { ref } from "vue";
+
+const reverse = ref(false);
 </script>
 
 <template>
@@ -47,7 +50,10 @@ import { state } from "@/state";
               </li>
             </ul>
             <ul>
-              <span>{{ state.debugValue }}</span>
+              <span>Reverse: {{ reverse }}</span>
+            </ul>
+            <ul>
+              <span>State: {{ state.debugValue }}</span>
             </ul>
           </div>
         </nav>
@@ -58,8 +64,8 @@ import { state } from "@/state";
             <h1 class="h2">Logs</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
               <div class="btn-group me-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary">
-                  Share
+                <button type="button" class="btn btn-sm btn-outline-secondary" @click="reverse = !reverse">
+                  Reverse
                 </button>
                 <button type="button" class="btn btn-sm btn-outline-secondary">
                   Export
@@ -68,8 +74,7 @@ import { state } from "@/state";
             </div>
           </div>
 
-          <VScroll title="Base VirtualScroll"></VScroll>
-
+          <VScroll title="Base VirtualScroll" :reverse="reverse"></VScroll>
         </main>
       </div>
     </div>
