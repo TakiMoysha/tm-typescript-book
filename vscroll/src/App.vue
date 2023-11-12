@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import VScroll from "@/components/VirtualScroll.vue";
+// import VScroll from "@/components/VirtualScroll.vue";
+import DynamicHeightVScroll from "@/components/DynamicHeightVirtualScroll.vue";
 import { state } from "@/state";
 import { ref } from "vue";
 
@@ -74,7 +75,7 @@ const reverse = ref(false);
             </div>
           </div>
 
-          <VScroll title="Base VirtualScroll" :reverse="reverse"></VScroll>
+          <DynamicHeightVScroll title="Base VirtualScroll" :reverse="reverse"/>
         </main>
       </div>
     </div>
